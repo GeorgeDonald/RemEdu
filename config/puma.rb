@@ -10,9 +10,6 @@ threads threads_count, threads_count
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
 port        ENV.fetch("PORT") { 3000 }
-ssl_key = File.expand_path '../../.ssl/localhost.key', __FILE__
-ssl_cert = File.expand_path '../../.ssl/localhost.crt', __FILE__
-bind "ssl://127.0.0.1:3000?key=#{ssl_key}&cert=#{ssl_cert}"
 
 # Specifies the `environment` that Puma will run in.
 #
