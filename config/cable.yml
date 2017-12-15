@@ -1,0 +1,10 @@
+development:
+  adapter: async
+
+test:
+  adapter: async
+
+production:
+  adapter: redis
+  url: redis://redistogo:0ee7b8c3a89cb6e9721ab45c1d92ee24@soldierfish.redistogo.com:9527/
+  #channel_prefix: RemEdu_production
