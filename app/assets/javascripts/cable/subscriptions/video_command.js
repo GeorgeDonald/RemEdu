@@ -1,6 +1,6 @@
 function initVideoCommandChannel(){
   App.videoCommandChannel = App.cable.subscriptions.create(
-    { channel: "VideoCommandChannel", room: "Best Room" });
+    { channel: "VideoCommandChannel", room: "Best Room" },
     {
       received: (data) =>
       {
