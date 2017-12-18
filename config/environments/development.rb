@@ -1,6 +1,6 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
-  config.force_ssl = true
+  #config.force_ssl = true
   config.action_cable.allowed_request_origins = ['https://localhost:3000',/https:\/\/\*/]
   config.action_cable.disable_request_forgery_protection = true
   config.action_cable.url = "ws://localhost:3000/cable"
