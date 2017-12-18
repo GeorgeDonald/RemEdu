@@ -5,6 +5,10 @@ var cameraStream = null;
 var mediaRecorder = null;
 var mediaSource = null;
 var sourceBuffer = null;
+var encodeTimerId = undefined;
+var playbackTimerId = undefined;
+var eleVideo = null;
+var playbackStopped = true;
 
 function cameraInitialize(eleVideoId){
   if (navigator.mediaDevices === undefined) {
@@ -72,7 +76,7 @@ function onCodedData(data) {
   //console.log(`received ${data.data.size} byte data`);
   //jQuery.post('/video',e.data,()=>console.log("posted"));
   //console.log(mediaRecorder.mimeType);
-
+  App.videoChannel.send({video_data: data.data});
   //sourceBuffer.appendBuffer(data);
 
   /*
@@ -117,10 +121,10 @@ function coderStart(){
     console.log("Error: "+e.name+" -- "+e.message);
   }
   mediaRecorder.onstart = function(e) {
-    console.log("ok, started");
+    //console.log("ok, started");
   }
   mediaRecorder.onstop = function(e) {
-    console.log("oop, stopped");
+    //console.log("oop, stopped");
   }
   mediaRecorder.start(33);
 }
@@ -128,11 +132,30 @@ function coderStart(){
 function coderToggle(){
   if(!cameraStream)
     return;
-  if(mediaRecorder === null)
+  if(mediaRecorder === null){
     coderStart();
+    encodeTimerId = setInterval(()=>{
+      mediaRecorder.stop();
+      App.videoChannel.send({video_data: 'end_of_video_segment'});
+      if( playbackTimerId == undefined){
+        playbackTimerId = setInterval(()=>{
+          if(playbackStopped){
+            playbackStopped = false;
+            eleVideo.play();
+          }
+        }, 11);
+      }
+      mediaRecorder.start(33);
+    }, 1000);
+  }
   else {
     mediaRecorder.stop();
     mediaRecorder = null;
+    clearInterval(videoTimerId);
+    videoTimerId = undefined;
+    clearInterval(playbackTimerId);
+    playbackTimerId = undefined;
+    playbackStopped = false;
   }
 }
 
@@ -148,7 +171,13 @@ function mediaSourceCreate(){
 }
 
 window.onload=()=>{
-  initChat();
+  eleVideo = document.querySelector('#live_playback_video');
+  eleVideo.src = '/video';
+  eleVideo.addEventListener('ended',()=>{ playbackStopped = true; });
+
+  initChatChannel();
+  initVideoChannel();
+  initVideoCommandChannel();
   //mediaSourceCreate();
   document.querySelector('#start_stop_live_local_video').addEventListener('click',
     event=>cameraStart());

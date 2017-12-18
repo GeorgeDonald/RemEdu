@@ -1,5 +1,5 @@
 
-function initChat(){
+function initChatChannel(){
   App.chatChannel = App.cable.subscriptions.create(
     { channel: "ChatChannel", room: "Best Room" },
     {
